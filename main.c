@@ -1,17 +1,16 @@
-#include <stdio.h>                                                                                                                                                                                                                                                                                                           main.c                                                                                                                                                                                                                                                                                                                       #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "led.h"
 #include "calcul.h"
 #include <string.h>
 
-void run(FILE *input_file, FILE *output_file, int only_longest) {
+char *run(FILE *input_file, FILE *output_file, int only_longest) {
 
         char buffer[4000];
-        if ( only_longest != 0 ) {
-                int nbr_digits = 0;
-                char *cont = NULL;
-        }
+        int nbr_digits = 0;
+        char *cont = NULL;
+
 
         while (fgets(buffer, sizeof(buffer), input_file) != NULL) {
                 buffer[strcspn(buffer, "\n")] = 0;
@@ -49,33 +48,36 @@ void run(FILE *input_file, FILE *output_file, int only_longest) {
                                         fprintf(stderr, "Error: The calculation did not work.");
                                 }
                         } else {
-                                if ( count_digits(result) == nbr_digits ) {
+
+                                if ( strlen(result) == nbr_digits ) {
                                         char *tempo;
-                                        tempo=realloc(cont,strlen(cont)+strlen(value)+strlen(iteration)+3 );
+                                        tempo=realloc(cont,strlen(cont)+strlen(value)+strlen(iter_str)+3 );
                                         if ( tempo==NULL ){
                                                 fprintf(stderr,"Erreur mémoire");
-                                                return 1;
+                                                return NULL;
                                         }
                                         cont=tempo;
-                                        sprintf(cont+strlen(cont), " %s %s",value,iteration);
-                                } else if ( count_digits(result) > nbr_digits ) {
+                                        sprintf(cont+strlen(cont), "\n%s %s",value,iter_str);
+                                } else if ( strlen(result) > nbr_digits ) {
                                         free(cont);
                                         cont = NULL;
-                                        cont=realloc(cont,strlen(value)+strlen(iteration)+2);
+                                        cont=realloc(cont,strlen(value)+strlen(iter_str)+2);
                                         if ( cont==NULL ){
                                                 fprintf(stderr,"Erreur mémoire");
-                                                return 1;
+                                                return NULL;
                                         }
-                                        sprintf(cont, "%s %s",value,iteration);
-                                        nbr_digits=count_digits(result);
+                                        sprintf(cont, "%s %s",value,iter_str);
+                                        nbr_digits=strlen(result);
                                 }
-
-                                }
+                                free(result);
+                                //printf("%d",nbr_digits);
+                        }
                 } else {
                         fprintf(stderr, "Error: Invalid format\n");
                         continue;
                 }
         }
+        return cont;
 }
 
 
@@ -136,8 +138,23 @@ int main(int argc, char *argv[]) {
                 }
         }
 
-        run(input_file, output_file);
+        char *second_input=run(input_file, output_file,only_longest);
+        if (only_longest == 1) {
+                if (second_input != NULL) {
+                        FILE *flux_memoire = fmemopen(second_input, strlen(second_input), "r");
 
+                        if (flux_memoire != NULL) {
+                                char *second_output = run(flux_memoire, output_file, 0);
+                                free(second_output);
+                                fclose(flux_memoire);
+
+                        } else {
+                                fprintf(stderr, "Erreur: Echec de fmemopen\n");
+                        }
+                }
+        }
+
+        free(second_input);
         if (input_path != NULL) {
 
                 fclose(input_file);
