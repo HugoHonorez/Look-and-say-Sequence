@@ -9,6 +9,7 @@ char *run(FILE *input_file, FILE *output_file, int only_longest) {
 
         char buffer[4000];
         int nbr_digits = 0;
+        int diff_digits =0;
         char *cont = NULL;
 
 
@@ -49,7 +50,7 @@ char *run(FILE *input_file, FILE *output_file, int only_longest) {
                                 }
                         } else {
 
-                                if ( strlen(result) == nbr_digits ) {
+                                if ( count_digits(result)==diff_digits && strlen(result) == nbr_digits ) {
                                         char *tempo;
                                         tempo=realloc(cont,strlen(cont)+strlen(value)+strlen(iter_str)+3 );
                                         if ( tempo==NULL ){
@@ -58,7 +59,7 @@ char *run(FILE *input_file, FILE *output_file, int only_longest) {
                                         }
                                         cont=tempo;
                                         sprintf(cont+strlen(cont), "\n%s %s",value,iter_str);
-                                } else if ( strlen(result) > nbr_digits ) {
+                                } else if (count_digits(result)==diff_digits && strlen(result) > nbr_digits ) {
                                         free(cont);
                                         cont = NULL;
                                         cont=realloc(cont,strlen(value)+strlen(iter_str)+2);
@@ -68,6 +69,17 @@ char *run(FILE *input_file, FILE *output_file, int only_longest) {
                                         }
                                         sprintf(cont, "%s %s",value,iter_str);
                                         nbr_digits=strlen(result);
+                                } else if ( count_digits(result)>diff_digits ){
+                                        free(cont);
+                                        cont = NULL;
+                                        cont=realloc(cont,strlen(value)+strlen(iter_str)+2);
+                                        if ( cont==NULL ){
+                                                fprintf(stderr,"Erreur mémoire");
+                                                return NULL;
+                                        }
+                                        sprintf(cont, "%s %s",value,iter_str);
+                                        nbr_digits=strlen(result);
+                                        diff_digits=count_digits(result);
                                 }
                                 free(result);
                                 //printf("%d",nbr_digits);
