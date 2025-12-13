@@ -76,12 +76,19 @@ int run(void) {
 		}
 
 		if (!only_longest) {
-			if (fprintf(output_file, "%s\n", result) < 0) {
-				DEBUG(0, "Erreur d'écriture dans le fichier de sortie !");
-				free(result);
-				return 1;
-			}
-			free(result);
+			size_t len = strlen(result);
+
+            size_t written = fwrite(result, 1, len, output_file);
+
+            if (written < len) {
+                DEBUG(0, "Erreur: impossible d'écrire le resultat");
+                free(result);
+                return 1;
+            }
+
+            fputc('\n', output_file);
+
+            free(result);
 		} else {
 			size_t value_len = separator - buffer;
 
@@ -155,8 +162,19 @@ int run(void) {
 
 				char *result = solve(current -> value, current -> iterations);
 				if (result != NULL) {
-					fprintf(output_file, "%s\n", result);
-					free(result);
+					size_t len = strlen(result);
+
+                    size_t written = fwrite(result, 1, len, output_file);
+
+                    if (written < len) {
+                        DEBUG(0, "Erreur: impossible d'écrire le resultat");
+                        free(result);
+                        return 1;
+                	}
+
+                    fputc('\n', output_file);
+
+                    free(result);
 				} else {
 					DEBUG(0, "Erreur: Impossible de recalculer le résultat final.");
 				}
