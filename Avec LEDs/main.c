@@ -276,13 +276,6 @@ int main(int argc, char *argv[]) {
 	DEBUG(1, "Lancement du programme...");
 	int ret = run();
 
-	if (ret != 0) {
-        	DEBUG(0, "Le programme s'est terminé avec des erreurs");
-			setRedLed();
-    } else {
-			setGreenLed():
-	}
-
 	// On ferme bien les fichiers
 	if (input_path != NULL) {
 		fclose(input_file);
@@ -291,6 +284,13 @@ int main(int argc, char *argv[]) {
 	if (output_path != NULL) {
 		fclose(output_file);
 		DEBUG(2, "Fermeture fichier output");
+	}
+
+	if (ret != 0) {
+        	DEBUG(0, "Le programme s'est terminé avec des erreurs");
+			setRedLed();
+    } else {
+			setGreenLed():
 	}
 	
 	clearLed();
