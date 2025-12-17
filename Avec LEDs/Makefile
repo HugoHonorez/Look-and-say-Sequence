@@ -7,7 +7,7 @@ CC = gcc
 TARGET = main
 
 # Fichiers objets nécessaires
-OBJS = main.c calcul.c led.c
+OBJS = main.c calcul.c led.c -lgpiod
 
 # Règle par défaut quand on tape "make"
 all: $(TARGET)
