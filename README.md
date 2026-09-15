@@ -1,4 +1,4 @@
-# Projet Systèmes Informatiques
+# Look-and-say Sequence
 
 Ce projet implémente la suite de Conway ("look-and-say") en langage C, optimisé pour Raspberry Pi. Il gère la mémoire dynamiquement pour supporter une croissance exponentielle et utilise une interface GPIO pour indiquer visuellement l'état du calcul.
 
